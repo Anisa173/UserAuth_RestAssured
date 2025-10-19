@@ -14,11 +14,12 @@ import restAssured.userAuth.jwt.userLogin.Service.UserService;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
-
+@RequireArgsConstructor
 @Profile("rest")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+   
     private UserService uService;
 
     @PostMapping
@@ -35,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable("userId") String Id) throws Exception {
-        return ok(uService.getUserById(Id));
+        return ResponseEntity.ok(uService.getUserById(Id));
     }
 
     @GetMapping("/all")
