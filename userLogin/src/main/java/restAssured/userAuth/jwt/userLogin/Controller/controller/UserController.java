@@ -2,6 +2,7 @@ package restAssured.userAuth.jwt.userLogin.Controller.controller;
 
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,21 +15,26 @@ import restAssured.userAuth.jwt.userLogin.Service.UserService;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
-@RequireArgsConstructor
+
 @Profile("rest")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-   
+    @Autowired
     private UserService uService;
 
+    public UserController(UserService uService) {
+        this.uService = uService;
+    }
+
     @PostMapping
-    public ResponseEntity<Object> createUser(@Valid @RequestBody UserResponseDto userDto) throws Exception {
-        UserResponseDto returnUser;
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserResponseDto userDto) throws Exception {
+
+        UserResponseDto returnUser = null;
         try {
             returnUser = uService.createUser(userDto);
         } catch (UserExceptionHandler excp) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new GenericExceptionResponse(excp.getMessage(), "500"));
+            return ResponseEntity.ok(returnUser);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(returnUser);
@@ -36,16 +42,13 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable("userId") String Id) throws Exception {
-        return ResponseEntity.ok(uService.getUserById(Id));
+        return ok(uService.getUserById(Id));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserResponseDto>> getListOfUsers(@RequestParam(value = "page", defaultValue = "0")
-                                                                    int page,
-                                                                @RequestParam(value = "limit", defaultValue = "2") int limit)
-            throws Exception {
+    public ResponseEntity<List<UserResponseDto>> getListOfUsers(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "limit", defaultValue = "2") int limit) throws Exception {
 
-        return ResponseEntity.ok(uService.getUsers(page, limit));
+        return ok(uService.getUsers(page, limit));
     }
 
 
